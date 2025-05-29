@@ -9,7 +9,7 @@ Created on Thu May 29 09:58:47 2025
 import streamlit as st
 import re
 
-st.title("Word Pattern Matcher")
+st.title("Wyszukiwarka Słów")
 
 # Step 1: Get word length
 word_length = st.number_input("Wpisz długosc slowa", min_value=3, max_value=30, step=1)
