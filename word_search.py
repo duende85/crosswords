@@ -18,8 +18,9 @@ for i in range(word_length):
     letters.append(char.upper() if char else "?")
 
 # Step 3: Additional filters
-include_letters = st.text_input("Musi zawierać litery (np. atn, aatt)").upper().strip()
-exclude_letters = st.text_input("Nie może zawierać liter (np. xyz)").upper().strip()
+include_letters = st.text_input("Musi zawierać litery (np. ATN, AATT)").upper().strip()
+exclude_letters = st.text_input("Nie może zawierać liter (np. XYZ)").upper().strip()
+no_repeats = st.checkbox("Wyklucz słowa z powtarzającymi się literami")
 
 # Step 4: Create regex
 pattern = "".join(letters)
@@ -41,13 +42,20 @@ include_counter = Counter(include_letters)
 for word in words:
     if not regex.match(word):
         continue
+
     # Must include exact number of letters
     word_counter = Counter(word)
     if any(word_counter[char] < count for char, count in include_counter.items()):
         continue
+
     # Must exclude these letters
     if any(char in word for char in exclude_letters):
         continue
+
+    # Exclude words with repeated letters (if checked)
+    if no_repeats and len(set(word)) != len(word):
+        continue
+
     matches.append(word)
 
 # Step 7: Display results
