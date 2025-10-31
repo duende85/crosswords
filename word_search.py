@@ -22,6 +22,12 @@ include_letters = st.text_input("Musi zawierać litery (np. ATN, AATT)").upper()
 exclude_letters = st.text_input("Nie może zawierać liter (np. XYZ)").upper().strip()
 no_repeats = st.checkbox("Wyklucz słowa z powtarzającymi się literami")
 
+# NEW OPTION: must contain only letters from a given set
+restricted_set = st.text_input(
+    "Zestaw liter (musi zawierać przynajmniej jedną i nie może mieć żadnej spoza zestawu)",
+    placeholder="np. ANTR"
+).upper().strip()
+
 # Step 4: Create regex
 pattern = "".join(letters)
 regex_pattern = "^" + pattern.replace("?", ".") + "$"
@@ -43,7 +49,7 @@ for word in words:
     if not regex.match(word):
         continue
 
-    # Must include exact number of letters
+    # Must include required letters (with frequency)
     word_counter = Counter(word)
     if any(word_counter[char] < count for char, count in include_counter.items()):
         continue
@@ -52,9 +58,18 @@ for word in words:
     if any(char in word for char in exclude_letters):
         continue
 
-    # Exclude words with repeated letters (if checked)
+    # Exclude words with repeated letters
     if no_repeats and len(set(word)) != len(word):
         continue
+
+    # Must come only from restricted set (if provided)
+    if restricted_set:
+        # Word must contain at least one from the set
+        if not any(char in restricted_set for char in word):
+            continue
+        # And cannot contain any letter outside the set
+        if any(char not in restricted_set for char in word):
+            continue
 
     matches.append(word)
 
